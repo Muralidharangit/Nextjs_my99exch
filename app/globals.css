@@ -1,0 +1,30 @@
+/* Site-wide styles. Swiper CSS loads first (layout.tsx), then these rules, then Tailwind, so Tailwind utilities win. */
+/* Small helpers that are awkward to express with Tailwind utilities */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px solid #FFB800; outline-offset: 2px; }
+[hidden] { display: none !important; }
+.prose-news p { margin-bottom: 1rem; line-height: 1.75; color: #334155; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Swiper: promo dots and match carousel tweaks */
+.promo-dots .swiper-pagination-bullet { width: 8px; height: 8px; margin: 0 3px !important; background: #CBD5E1; opacity: 1; border-radius: 9999px; transition: width .3s, background-color .3s; }
+.promo-dots .swiper-pagination-bullet-active { width: 20px; background: #FFB800; }
+.swiper-button-disabled { opacity: .35; pointer-events: none; }
+
+/* WhatsApp chat bubble pop-in */
+@keyframes wa-pop{0%{opacity:0;transform:translateY(8px) scale(.85)}70%{transform:translateY(-2px) scale(1.03)}100%{opacity:1;transform:none}}
+.wa-pop:not([hidden]){animation:wa-pop .45s cubic-bezier(.2,.9,.3,1.2) both}
+
+/* Game ID popup: bouncy pop-in and a gently floating mascot */
+@keyframes popup-in{0%{opacity:0;transform:translateY(24px) scale(.82)}60%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:none}}
+.popup-in{animation:popup-in .55s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes mascot-float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(-1.5deg)}}
+.mascot-float{animation:mascot-float 3.2s ease-in-out infinite;transform-origin:50% 100%}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

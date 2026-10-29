@@ -1,274 +1,219 @@
 # MY99 EXCH — Live Cricket Scores
 
-A static cricket live-score website with live scores, ball-by-ball commentary, scorecards, series, news and free-to-play cricket games. The page flow follows Cricbuzz, with MY99 EXCH branding.
+A cricket live-score website with live scores, ball-by-ball commentary, scorecards, series, news and sports games. The page flow follows Cricbuzz, with MY99 EXCH branding.
 
-There is no build step and no backend. Every page is plain HTML that loads Tailwind and Swiper from a CDN, and vanilla JavaScript renders the content from dummy data.
+The site runs on **Next.js (App Router) + TypeScript + React**. It was migrated from a static HTML / vanilla JS / Tailwind Play CDN site without changing the design. The old static files have been removed; they remain in the git history (before the migration commit) if you ever need them.
+
+There is no backend, database or cricket API. All content comes from dummy data in [lib/data.ts](lib/data.ts).
 
 ---
 
-## 1. Tech stack
+## 1. Running the project
 
-| Layer | What we used | Where it is loaded |
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # production build
+npm start          # serve the production build
+npm run typecheck  # tsc --noEmit (strict)
+npm run lint       # ESLint (eslint-config-next)
+```
+
+Node 20 or newer is required. The project was built and tested with Node 22 and npm 10.
+
+---
+
+## 2. Tech stack
+
+| Layer | What we use | Where |
 |---|---|---|
-| Markup | Static HTML5. Each page is a shell with empty placeholders. | `*.html` |
-| Styling | **Tailwind CSS Play CDN**, set up by a custom config | `https://cdn.tailwindcss.com` and [JS/tw-config.js](JS/tw-config.js) |
-| Extra CSS | Swiper dot styles, focus ring, scrollbar hiding, news prose, reduced motion | [CSS/style.css](CSS/style.css) |
-| Sliders | **Swiper 11.1.14** for the banner rotators and the home match carousel | jsDelivr: `swiper@11.1.14/swiper-bundle.min.css` / `.min.js` |
-| Fonts | **Inter** (body) and **Rajdhani** (headings, `font-display`) | Google Fonts |
-| Flags | flagcdn.com PNGs. Teams without an ISO code get a coloured initials badge. | `flag()` in [JS/ui.js](JS/ui.js) |
-| Scripting | Vanilla JavaScript (ES2020) with no framework, no modules and no bundler | `JS/*.js` |
-| Icons | Inline SVGs | `ICON` object in [JS/ui.js](JS/ui.js) |
+| Framework | **Next.js 16.4.2** (App Router), **React 19.2** | [app/](app/) |
+| Language | **TypeScript 5.9**, `strict` mode | [tsconfig.json](tsconfig.json) |
+| Styling | **Tailwind CSS 3.4**, compiled through PostCSS. It uses the same theme as the old Play CDN config. | [tailwind.config.ts](tailwind.config.ts), [app/globals.css](app/globals.css) |
+| Sliders | **Swiper 11.1.14**, the same version and options as before | [components/Rotator.tsx](components/Rotator.tsx), [components/home/MatchCarousel.tsx](components/home/MatchCarousel.tsx) |
+| Fonts | **Inter** 400–700 and **Rajdhani** 500–700, self-hosted by `next/font/google` | [app/layout.tsx](app/layout.tsx) |
+| Flags | flagcdn.com PNGs, with a coloured initials badge for teams without an ISO code | `Flag` in [components/ui.tsx](components/ui.tsx) |
+| Icons | Inline SVGs | [components/icons.tsx](components/icons.tsx) |
 
-### Tailwind theme ([JS/tw-config.js](JS/tw-config.js))
+### Tailwind theme ([tailwind.config.ts](tailwind.config.ts))
 
-- **Colours**
-  - `brand`: teal, `#0F766E` / `#14B8A6`. Used for the header, the footer and accents.
-  - `strip`: the match strip under the header.
-  - `navy`: dark panels and game cards.
-  - `gold`: `#FFB800`, for Play Now buttons and active dots.
-  - `live`: red, for LIVE badges and wickets.
-  - `page`: the page background.
-- **Shadows**: `shadow-card`, `shadow-lift`, `shadow-glow`.
-- **Animations**: `animate-marquee` (game banner ticker), `animate-shimmer` (Play Now buttons), `animate-livepulse` (LIVE dot).
+The theme is the same one the original Play CDN config used:
+
+| Token | Values |
+|---|---|
+| `brand` | 50 `#E6F7F5`, 500 `#0B7A6F`, 600 `#09685F`, 700 `#07564F`. Used for the header, footer and accents. |
+| `strip` | `#1E2A2E`, the match strip under the header |
+| `navy` | 700 `#1A2B6D`, 800 `#132057`, 900 `#0C1640`. Used for dark panels and game cards. |
+| `gold` | 300 `#FFE27A`, 400 `#FFC933`, 500 `#FFB800`, 600 `#F59E0B`. Used for Play buttons and active states. |
+| `live` | `#E53935`, for LIVE badges and wickets |
+| `page` | `#EEF2F5`, the page background |
+| Shadows | `shadow-card`, `shadow-lift`, `shadow-glow` |
+| Animations | `animate-marquee` (games ticker), `animate-shimmer` (Play buttons), `animate-livepulse` (LIVE dot) |
+
+**All styling lives in one file plus Tailwind classes.** [app/globals.css](app/globals.css) holds the few site-wide rules (scrollbar hiding, focus ring, news prose, reduced motion, Swiper dots, WhatsApp bubble animation) followed by the Tailwind layers. The only inline `style` attributes left are values computed from data: team badge colours, worm-chart legend colours and the win-probability bar widths.
+
+**CSS order matters.** Swiper's CSS loads first ([app/layout.tsx](app/layout.tsx)), then the site rules, then Tailwind, so Tailwind utilities win over Swiper's defaults (for example the padding on the match carousel), exactly as in the original design.
 
 ---
 
-## 2. Folder structure
+## 3. Folder structure
 
 ```
 MY99EXCH-SCORE/
-├── index.html          Home
-├── matches.html        Match centre (Live / Recent / Upcoming)
-├── match-detail.html   One match: info, live, scorecard, commentary…
-├── series.html         Series list and series detail
-├── news.html           News list and article
-├── games.html          Games lobby
-├── game-detail.html    One game
-├── page.html           Static pages (About, Contact, Terms, Privacy, Rankings)
-├── CSS/
-│   └── style.css
-├── JS/
-│   ├── tw-config.js    Tailwind theme
-│   ├── data.js         All dummy data (teams, squads, series, matches, news, games, ads)
-│   ├── cricket.js      Ball-by-ball innings simulator
-│   ├── ui.js           Shared layout + UI helpers (header, sidebars, footer, tabs, sliders)
-│   ├── home.js         ┐
-│   ├── matches.js      │
-│   ├── match-detail.js │
-│   ├── series.js       │  One script per page
-│   ├── news.js         │
-│   ├── games.js        │
-│   ├── game-detail.js  │
-│   └── page.js         ┘
-└── IMG/
-    ├── logo.webp
-    ├── ads/            Banner ads
-    ├── games/          Game artwork
-    ├── news/           News photos
-    └── zip/            Backup of the original crops (not used by the site)
+├── app/                     Next.js routes
+│   ├── layout.tsx           Shared shell: header, 3-column grid, sidebars, footer, WhatsApp button
+│   ├── globals.css          The single global stylesheet: site rules + Tailwind layers
+│   ├── page.tsx             /               Home
+│   ├── matches/             /matches        Live / Recent / Upcoming
+│   ├── match-detail/        /match-detail   Match centre (9 tabs)
+│   ├── series/              /series         Series list and series page
+│   ├── news/                /news           News list and article
+│   ├── games/               /games          Games lobby
+│   ├── game-detail/         /game-detail    One game
+│   └── page-content/        /page-content   About, Contact, Terms, Privacy, Rankings
+├── components/
+│   ├── SiteHeader.tsx       Header, match strip, ALL panel, mobile drawer
+│   ├── Sidebars.tsx         Left sidebar (tall rotator + Quick Links), right sidebar
+│   ├── SiteFooter.tsx       Footer + mobile bottom nav
+│   ├── WhatsApp.tsx         Floating WhatsApp button + pop-up bubble
+│   ├── Rotator.tsx          Swiper promo rotator + MobilePromo
+│   ├── Tabs.tsx             Accessible tab bar
+│   ├── ui.tsx               Flag, badges, Card, SectionHead, PlayBtn, MatchRow, ScoreLine, Chip, Pills
+│   ├── icons.tsx            Inline SVG icons
+│   ├── home/  matches/  match/  series/  news/  games/  pages/   Page-specific client components
+├── lib/
+│   ├── data.ts              All dummy data (teams, squads, series, matches, news, games + game guides, ads, tables, rankings)
+│   ├── cricket.ts           Deterministic ball-by-ball innings simulator
+│   ├── types.ts             Data types
+│   ├── nav.ts               Navigation menu + active-page mapping
+│   ├── constants.ts         Tab and filter lists shared by server and client code
+│   ├── params.ts            Search-param helpers, URL sync (history.replaceState)
+│   └── toast.ts             Status toast
+├── public/images/           Images served by the site (logo, ads/, games/, news/)
+├── next.config.ts           Redirects from the old .html URLs
+└── tailwind.config.ts  postcss.config.mjs  eslint.config.mjs  tsconfig.json  package.json
 ```
+
+**Server and client components.** Pages are Server Components and read `searchParams` on the server. Anything interactive is a Client Component:
+- the header, footer and WhatsApp button
+- rotators and the match carousel
+- the tabs and filters on each page
+- the match centre
+- the contact form and rankings
+
+When a link changes the query string, the page's client component remounts with the new values (by `key`). This matches the old full-page-reload behaviour.
 
 ---
 
-## 3. How a page works
+## 4. Routes
 
-All 8 HTML files share the same shell. They differ only in the `data-page` value on `<body>` and in which page script loads last.
+| Old page | Next.js route | Query parameters |
+|---|---|---|
+| `index.html` | `/` | – |
+| `matches.html` | `/matches` | `tab` (Live, Recent, Upcoming), `cat`, `team`. `tab` and `cat` follow the selection. |
+| `match-detail.html` | `/match-detail` | `id`, `tab` (`info`, `live`, `scorecard`, `squads`, `overs`, `graphs`, `highlights`, `full-commentary`, `news`). Both follow the selection. |
+| `series.html` | `/series` | `id`, `tab` (Fixtures, Points Table, Stats) |
+| `news.html` | `/news` | `id` (article), `cat` |
+| `games.html` | `/games` | `cat`, which follows the selection |
+| `game-detail.html` | `/game-detail` | `id` |
+| `page.html` | `/page-content` | `p` (about, contact, terms, privacy, rankings). Rankings also uses the hash: `#Test`, `#ODI`, `#T20`. |
 
-```html
-<body data-page="home">
-  <header id="site-header"></header>
-  <main class="max-w-[1600px] mx-auto px-4 py-4 grid
-               grid-cols-1 md:grid-cols-[1fr_280px] lg:grid-cols-[1fr_300px]
-               xl:grid-cols-[210px_1fr_310px] 2xl:grid-cols-[240px_1fr_340px] gap-4 xl:gap-5">
-    <aside id="left-sidebar" class="hidden xl:block"></aside>
-    <section id="content"></section>
-    <aside id="right-sidebar"></aside>
-  </main>
-  <footer id="site-footer"></footer>
-
-  <script src="…swiper-bundle.min.js"></script>
-  <script src="JS/data.js"></script>
-  <script src="JS/cricket.js"></script>
-  <script src="JS/ui.js"></script>
-  <script src="JS/home.js"></script>   <!-- page script -->
-</body>
-```
-
-1. **`ui.js`** fills the placeholders that every page shares:
-   - **Header:** the teal bar with the logo and nav, the live match strip, and the mobile drawer.
-   - **Left sidebar:** the tall banner rotator and Quick Links.
-   - **Right sidebar:** the 300×250 rotator, Featured Games and the 300×600 rotator.
-   - **Footer:** the teal footer and the mobile bottom nav.
-
-   It uses `data-page` to highlight the active nav item. On `DOMContentLoaded` it calls `initRotators()` to start every Swiper banner.
-2. **The page script** writes the page's own content into `#content`.
-
-### Responsive layout
-
-| Width | Layout |
-|---|---|
-| < 768px (mobile) | Single column. Banners appear inline between sections. Bottom nav bar and hamburger drawer. |
-| 768–1279px (tablet / small laptop) | Content plus right sidebar. Desktop nav is still collapsed. |
-| ≥ 1280px (`xl`, laptop) | Full 3 columns: left banner, content, right sidebar. Full desktop nav. |
-| ≥ 1536px (`2xl`) | Wider sidebars. Content is capped at 1600px. |
-
-Sidebars are sticky. Touch targets are at least 44px.
-
----
-
-## 4. Pages
-
-| Page | URL | Script | What it shows |
-|---|---|---|---|
-| **Home** | `index.html` | [home.js](JS/home.js) | See the list below this table. |
-| **Matches** | `matches.html?tab=Live&team=IND` | [matches.js](JS/matches.js) | Live / Recent / Upcoming tabs and category pills, grouped by series. An optional `?team=` filter. The URL stays in sync. |
-| **Match detail** | `match-detail.html?id=ind-aus&tab=Scorecard` | [match-detail.js](JS/match-detail.js) | Navy score hero. Tabs: Info, Live, Scorecard, Squads, Overs, Graphs, Highlights, Full Commentary, News (see below). |
-| **Series** | `series.html` / `series.html?id=aus-ind-2026&tab=Points Table` | [series.js](JS/series.js) | All series. One series has Fixtures, Points Table and Stats tabs. Stats are totalled from the simulated innings. |
-| **News** | `news.html` / `news.html?id=rohit-comeback` | [news.js](JS/news.js) | News list with category pills, and a full article view. |
-| **Games** | `games.html` | [games.js](JS/games.js) | Hero ("Free sports games. Play anytime."), a scrolling game banner marquee, and a lobby with category tabs. |
-| **Game detail** | `game-detail.html?id=cricket-clash` | [game-detail.js](JS/game-detail.js) | Game banner, About, How to play, related games. |
-| **Static pages** | `page.html?p=about` (`about`, `contact`, `terms`, `privacy`, `rankings`) | [page.js](JS/page.js) | About, Contact (demo form), Terms, Privacy, ICC-style Rankings tabs. |
-
-The home page shows, from top to bottom:
-1. Match card carousel: 2.5 cards on desktop, 1.5 on tablet, 1.2 on mobile, with a promo card after every 3 matches.
-2. Strip banner slider.
-3. Quick Access: India Men, India Women, Games, Series.
-4. Latest News, plus a featured story.
-5. Featured Games.
-6. More News.
-7. Live Matches widget with tabs and filters.
-
-The match detail tabs work like this:
-- **Live:** current batters and bowler, key stats, recent balls, and an animated win-probability bar.
-- **Scorecard:** batting and bowling cards, extras, fall of wickets, and Did Not Bat.
-- **Squads:** both playing XIs with role icons.
-- **Overs:** a ball-by-ball list of every over.
-- **Graphs:** a Manhattan chart and a worm chart, both drawn as SVG.
-- **Full Commentary:** over summaries and a "Load more" button.
-
-Tabs are lazy. A panel renders the first time it is opened, and the active tab is kept in `?tab=`.
+**Old links keep working.** Every `*.html` URL redirects (308) to its new route with the query string kept, for example `/matches.html?tab=Recent` → `/matches?tab=Recent` ([next.config.ts](next.config.ts)).
 
 ---
 
 ## 5. Data and the cricket simulator
 
-### [JS/data.js](JS/data.js)
+[lib/data.ts](lib/data.ts) holds the same values as the original site. Only the image paths (`/images/...`) and link targets (the new routes) changed.
 
-| Constant | Contents |
-|---|---|
-| `TEAMS` | International men and women, domestic (MUM, DEL, KAR, TN) and league teams (CHS, KOR, MMV, DLD, BLB, HYH). Each has a name, short code, flag code and colour. |
-| `SQUADS` | Real player names for the main teams. `squadOf()` generates squads for the others. |
-| `SERIES` | 12 series, with standings or points tables |
-| `MATCHES` | 14 matches. Each has a format (Test, ODI or T20), a state (`live`, `recent` or `upcoming`), innings `{t, r, w, o}`, venue, toss, win %, and viewer count. |
-| `NEWS`, `NEWS_BODY` | 9 news stories and the article body text |
-| `GAMES`, `GAME_CATS` | 6 free games: Cricket Clash, Football Clash, Basketball Clash, Game Clash, Cricket Clash: India, Cricket Quiz. Categories: Cricket, Football, Basketball, Esports, Quiz. |
-| `ADS` | Banner slide sets: `tall`, `tall2`, `box`, `strip`, `card` |
-| `TABLES`, `RANKINGS` | League points tables and team rankings |
+[lib/cricket.ts](lib/cricket.ts) is a line-for-line TypeScript port of the original simulator. Each match stores only a headline score (for example `{ t: 'IND', r: 238, w: 5, o: '83.1' }`). The simulator rebuilds that innings ball by ball:
+- **Seeded:** `mulberry32` is seeded by the match id, so a match gives the same result on every load.
+- **Consistent:** the scorecard, commentary, overs list, fall of wickets, graphs and series stats all add up to the headline score.
+- **Self-checking:** if they don't, it logs a `simulation drift` warning.
 
-### [JS/cricket.js](JS/cricket.js): deterministic simulator
+**Verified identical.** During the migration, both simulators were run on all 14 matches: 18 innings and 5,456 deliveries. They produced byte-identical JSON, including the generated squads.
 
-Each match only stores a headline score, for example `{ t: 'IND', r: 287, w: 6, o: '72.4' }`. `simulateInnings()` rebuilds that innings one delivery at a time. Its random generator (`mulberry32`) is seeded by the match id, so a match gives the same result on every load.
-
-**The result:** the scorecard, commentary, over-by-over list, fall of wickets and graphs all add up to the headline score. If they ever don't, it logs a `simulation drift` warning in the console.
-
-To add or change a match, edit its `inns` in `MATCHES`. Everything else is generated from that.
+To add or change a match, edit its `inns` in `MATCHES`.
 
 ---
 
 ## 6. Images
 
-All images were cropped from the original design mockup. Banner images are shown as-is. Some rotator slides instead use game art with a text overlay and a PLAY NOW button, built by `adInner()` in `ui.js`.
+All images live in `public/images/` and are referenced as `/images/...`.
 
-### `IMG/logo.webp`
 | File | Size | Used in |
 |---|---|---|
-| `logo.webp` | 1354×271 | Header, footer, ad overlays |
+| `logo.webp` | 1354×271 | Header, drawer, footer, ad overlays, favicon |
+| `ads/tall-1.png` – `tall-3.png` | 280×690 | Tall rotators: left sidebar and right sidebar bottom (`ADS.tall`, `ADS.tall2`) |
+| `ads/box-1.png` – `box-3.png` | 220×300 | Right sidebar rotator, mobile promos, carousel promo cards, match-centre sponsor (`box-1`) (`ADS.box`) |
+| `ads/strip-1.png` – `strip-3.png` | 1200×200 | Home strip slider (`ADS.strip`) |
+| `ads/games-hero.jpg` | 1188×172 | Games page hero background |
+| `games/cricket-clash.png`, `football-clash.png`, `basketball-clash.png`, `game-clash.png`, `india-clash.png` | 280×240 | Game artwork (`GAMES`) |
+| `news/featured.jpg`, `news/n1.jpg` – `n8.jpg` | various | News photos; Cricket Quiz uses `news/featured.jpg` |
+| `popup/mascot.webp`, `logo-crown.webp`, `corner-left.webp`, `corner-right.webp` | transparent | Game ID popup artwork (cut out of the popup design) |
 
-### `IMG/ads/`: banners
-| File | Size (px) | Used in |
-|---|---|---|
-| `1.png` ("Big Wins Bigger Dreams"), `2.png` / `3.png` ("View Score") | 280×690 | Left sidebar tall rotator (`ADS.tall`) and right sidebar bottom rotator (`ADS.tall2`) |
-| `l1.png` (Cricket), `l2.png` (Football), `l3.png` (Badminton) | 220×300 | Right sidebar top rotator and mobile inline promos (`ADS.box`), promo cards in the home match carousel, sponsor box in the match detail hero (`l1.png`) |
-| `s1.png` (Sportsbook), `s2.png` (Cricket), `s3.png` (Badminton) | 1200×200 (aspect 6:1) | Home strip banner slider (`ADS.strip`) |
-| `strip.jpg` | 1188×172 | Games page hero background |
-| `left-tall.jpg`, `card-promo.jpg` | — | Old mockup crops, no longer used |
-
-### `IMG/games/`: game artwork (280×240)
-| File | Game | Category |
-|---|---|---|
-| `1.png` | Cricket Clash | Cricket |
-| `2.png` | Football Clash | Football |
-| `3.png` | Basketball Clash | Basketball |
-| `4.png` | Game Clash | Esports |
-| `5.png` | Cricket Clash: India | Cricket |
-
-Cricket Quiz (Quiz) uses `IMG/news/featured.jpg`.
-
-### `IMG/news/`: news photos
-| File | Size (px) | Used in |
-|---|---|---|
-| `featured.jpg` | 518×230 | Home featured story, news hero |
-| `n1.jpg` – `n4.jpg` | 120×96 | Latest News thumbnails |
-| `n5.jpg` – `n8.jpg` | 146×84 | More News thumbnails |
-
-### `IMG/zip/`
-`IMG/zip/` is a backup copy of the original crops. It includes the old casino banners (`right-top.jpg`, `right-tall.jpg`, `thumb-roulette.jpg`, `thumb-slots.jpg`, `thumb-teenpatti.jpg`), which were removed from the site. The site does not use this folder. **Delete it before deploying**, or the casino images will go live with the site.
+**Plain `<img>`, not `next/image`.** Images use plain `<img>` with the original classes (`object-cover`, aspect boxes, `loading="lazy"`), so they render at exactly the designed sizes and crops. The flags are external images from flagcdn.com. The ESLint `no-img-element` rule is turned off for this reason.
 
 ---
 
-## 7. Sliders (Swiper)
+## 7. Sliders and interactions
 
-| Slider | Where | Settings |
-|---|---|---|
-| Banner rotators | Left tall, right box, right tall, home strip, mobile inline promos | Built by `rotator()` and started by `initRotators()` in `ui.js`. Loop, autoplay every 5 s (pauses on hover), 600 ms transition, clickable gold dots (`.promo-dots`), keyboard and a11y. |
-| Match carousel | Home, top | Built in `home.js`. `slidesPerView` is 1.2 on mobile, 1.5 at ≥768px and 2.5 at ≥1024px. Arrow buttons, drag, keyboard and horizontal mouse-wheel. |
-| Games marquee | Games page | A CSS `animate-marquee` loop, not Swiper. It pauses on hover. |
-
----
-
-## 8. Accessibility
-
-- **Tabs:** real `role="tablist"` / `tab` / `tabpanel` markup, with Arrow, Home and End key support (`initTabs()` in `ui.js`).
-- **Focus:** a visible gold focus ring on `:focus-visible`.
-- **Touch targets:** at least 44px.
-- **Screen readers:**
-  - the home page has an `sr-only` `<h1>`
-  - images and links have alt text or `aria-label`s
-  - ball chips have ARIA labels such as "dot ball"
-- **Reduced motion:** `prefers-reduced-motion` turns animations off.
+| Feature | Behaviour (unchanged) |
+|---|---|
+| Banner rotators | Swiper with `loop`, autoplay every 5 s that pauses on hover, 600 ms transition, gold pagination dots, keyboard and a11y. Created in `useEffect` and destroyed on unmount. |
+| Match carousel | Shows 1.2, 1.5 or 2.5 cards (at ≥0, ≥768 and ≥1024px). Arrows, drag, keyboard and horizontal mouse-wheel. A promo card appears after every 3 matches. |
+| Games marquee | CSS `animate-marquee`, pauses on hover |
+| Tabs | `role=tablist/tab/tabpanel`, Arrow, Home and End keys, roving tabindex |
+| Match centre | Tab panels render the first time they are opened. Includes Load more commentary, innings pills (Overs, Graphs, Full Commentary), the animated win-probability bar, and the toast on Highlights. |
+| Header | Desktop dropdowns (hover and focus), ALL matches panel (closes on outside click or Escape), mobile drawer (locks body scroll, closes on Escape or a link) |
+| WhatsApp | The bubble pops up after 2.5 s. Closing it keeps it hidden for the rest of the browser session. The number is a placeholder: `WHATSAPP` in [components/WhatsApp.tsx](components/WhatsApp.tsx). |
 
 ---
 
-## 9. Running locally
+## 8. How the migration was verified
 
-The site needs a local web server, because some browsers block scripts on pages opened directly from `file://`.
-
-```bash
-cd MY99EXCH-SCORE
-python3 -m http.server 8765
-# open http://localhost:8765
-```
-
-There is nothing to install or build. To deploy, upload the folder to any static host (Netlify, Vercel, GitHub Pages, cPanel and so on). Leave out `IMG/zip/`.
+- **Screenshots:** 18 page states at 375, 768, 1280 and 1536px were compared with the original, 72 pairs in all. Animations were frozen and sliders reset to slide 1.
+  - Every page has exactly the same height as the original.
+  - At 768px and wider, pixel differences are below 0.05%. These are sub-pixel font anti-aliasing.
+  - At 375px, the remaining differences are anti-aliasing plus lazy images that had not loaded yet at capture time. The images load normally when scrolled into view.
+- **Computed styles:** colour, background, border, font, spacing, size, shadow, radius and so on were compared element by element on every page at every width. After the fixes in section 9, they match. The only differences are under 0.5px, from the self-hosted fonts.
+- **Functional:** 63 scripted checks of tabs, filters, URL sync, Load more, innings pills, keyboard navigation, drawer, ALL panel, toasts, contact form, rankings hash, WhatsApp, autoplay, client navigation, the back button, legacy redirects, and bad query values. All passed.
+- **Tooling:** `tsc --noEmit` (strict), `eslint .` and `next build` all pass. There are no hydration warnings in dev mode, and no page errors or 404s.
 
 ---
 
-## 10. Common edits
+## 9. Differences from the original, and known issues
+
+**Migration changes that keep the same look:**
+- **Self-hosted fonts.** `next/font` serves Inter and Rajdhani instead of the Google Fonts `<link>`. Glyph widths differ by about 0.02px.
+- **Quick Access pills.** The old markup put two text colours and two border colours on the Games and Series pills. The Play CDN happened to let violet and orange win, but compiled Tailwind orders those classes differently. The default slate colours now go only on the two India pills, so all four pills render as before.
+- **Client-side navigation.** Internal links use `next/link`, so pages change without a full reload. Menus close, and dropdowns lose focus, when a link is followed, as they did after a reload. Rankings also follows `#Test`, `#ODI` and `#T20` when they change on the same page.
+- **Safer lookups.** Query values such as `?id=__proto__` no longer match built-in object keys. The old site would have crashed on them.
+
+**Pre-existing, unchanged:**
+- **Rotators don't loop.** Swiper logs "not enough slides for loop mode" for the 3-slide rotators, so loop is disabled and autoplay stops at the last slide. The original site behaves the same.
+- **Swiper security advisory.** `npm audit` reports a prototype-pollution advisory for Swiper ≤12.1.1. It was kept at 11.1.14 to avoid changing behaviour. The site passes only fixed options to Swiper, never user input.
+- **Banner wording clash.** The home strip banners (`s1–s3`) advertise a sportsbook, while the Terms page says all games are free with no real money.
+- **Small remount edge case.** On the match centre, if you switch tabs and then follow a link to the exact URL the page was first opened with, the page keeps the current tab.
+
+---
+
+## 10. The original static site
+
+The old static files (`*.html`, `JS/`, `CSS/`, `IMG/` including the `IMG/zip/` backup) were removed after the migration was verified. They are still in the git history. Old `.html` links keep working through the redirects in [next.config.ts](next.config.ts).
+
+---
+
+## 11. Common edits
 
 | Task | Where |
 |---|---|
-| Change brand colours or fonts | [JS/tw-config.js](JS/tw-config.js) |
-| Add or edit a match or score | `MATCHES` in [JS/data.js](JS/data.js) |
-| Add a news story | `NEWS` in [JS/data.js](JS/data.js), plus an image in `IMG/news/` |
-| Add a game | `GAMES` in [JS/data.js](JS/data.js), plus art in `IMG/games/`. Add About text for a new category in `ABOUT` in [JS/game-detail.js](JS/game-detail.js). |
-| Change banner slides | `ADS` in [JS/data.js](JS/data.js) |
-| Change nav, header or footer links | `NAV`, `renderHeader()` and `renderFooter()` in [JS/ui.js](JS/ui.js) |
-| Edit About, Terms or Privacy text | `PAGES` in [JS/page.js](JS/page.js) |
-
----
-
-## 11. Content notes
-
-- **Content policy:** the site has no betting or casino content. Every game is free to play with no real money, and the Terms page says so.
-- **Banner slogans:** `ads/1.png` ("BIG WINS BIGGER DREAMS") and `strip.jpg` ("BIGGER REWARDS") have reward-style slogans printed into the images.
-- **Dummy data:** all scores, players' stats, news stories and viewer counts are made up for demo purposes.
+| Brand colours, fonts, shadows, animations | [tailwind.config.ts](tailwind.config.ts), fonts in [app/layout.tsx](app/layout.tsx) |
+| Add or edit a match or score | `MATCHES` in [lib/data.ts](lib/data.ts) |
+| Add a news story | `NEWS` in [lib/data.ts](lib/data.ts), plus an image in `public/images/news/` |
+| Add a game | `GAMES` in [lib/data.ts](lib/data.ts), plus art in `public/images/games/`. Add About text for a new category in `GAME_ABOUT` in [lib/data.ts](lib/data.ts). |
+| Change banner slides | `ADS` in [lib/data.ts](lib/data.ts) |
+| Navigation menus | `NAV` in [lib/nav.ts](lib/nav.ts) |
+| Footer links | [components/SiteFooter.tsx](components/SiteFooter.tsx) |
+| About, Terms and Privacy text | `PAGES` in [app/page-content/page.tsx](app/page-content/page.tsx) |
+| WhatsApp number | `WHATSAPP` in [components/WhatsApp.tsx](components/WhatsApp.tsx) |
