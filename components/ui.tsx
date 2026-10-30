@@ -29,9 +29,12 @@ export function SectionHead({ title, href, label = 'View All' }: { title: string
   );
 }
 
-/** internal routes use next/link; links with a #fragment ("#lobby", rankings "#ODI") stay plain anchors so the browser handles the hash */
+/** internal routes use next/link; external URLs (http/https) and links with a #fragment stay plain anchors */
 export function SmartLink({ href, ...rest }: { href: string; className?: string; children?: ReactNode; onClick?: MouseEventHandler<HTMLAnchorElement>; 'aria-label'?: string; 'aria-current'?: 'page' }) {
-  return href.includes('#') ? <a href={href} {...rest} /> : <Link href={href} {...rest} />;
+  if (href.startsWith('http://') || href.startsWith('https://') || href.includes('#')) {
+    return <a href={href} {...rest} />;
+  }
+  return <Link href={href} {...rest} />;
 }
 
 export function PlayBtn({ label = 'Play Now', href = '/games', extra = '', onClick }: { label?: string; href?: string; extra?: string; onClick?: MouseEventHandler<HTMLAnchorElement> }) {
