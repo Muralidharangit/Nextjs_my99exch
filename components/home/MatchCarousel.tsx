@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Swiper from 'swiper';
 import { A11y, Keyboard, Mousewheel, Navigation } from 'swiper/modules';
-import { ADS, MATCHES, SERIES, TEAMS } from '@/lib/data';
-import type { AdSlide, Match } from '@/lib/types';
+import { MATCHES, SERIES, TEAMS } from '@/lib/data';
+import type { Match } from '@/lib/types';
 import { ICON } from '../icons';
 import { FormatBadge, LiveBadge, ScoreLine, statusColor } from '../ui';
 
@@ -30,14 +30,6 @@ function MatchCard({ m }: { m: Match }) {
     </article>
   );
 }
-
-/* promo slide: the portrait ad is shown whole over a blurred copy of itself */
-const PromoCard = ({ ad }: { ad: AdSlide }) => (
-  <Link href={ad.href} className="swiper-slide !h-auto relative block rounded-xl overflow-hidden shadow-card hover:-translate-y-1 hover:shadow-glow transition duration-300 bg-navy-900">
-    <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-60" loading="lazy" />
-    <img src={ad.img} alt={ad.alt} className="absolute inset-0 w-full h-full object-contain" loading="lazy" />
-  </Link>
-);
 
 export default function MatchCarousel() {
   const track = useRef<HTMLDivElement>(null);
@@ -65,10 +57,9 @@ export default function MatchCarousel() {
       <button ref={prev} type="button" data-scroll="-1" className="mc-prev hidden md:grid absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-card place-items-center text-slate-700 hover:text-brand-500 hover:shadow-lift transition" aria-label="Previous matches">{ICON.left}</button>
       <div ref={track} id="mc-track" className="swiper py-2 -my-2 px-0.5">
         <div className="swiper-wrapper">
-          {carouselMatches.map((m, i) => [
-            <MatchCard key={m.id} m={m} />,
-            (i + 1) % 3 === 0 ? <PromoCard key={`promo-${i}`} ad={ADS.box[((i + 1) / 3 - 1) % ADS.box.length]} /> : null
-          ])}
+          {carouselMatches.map(m => (
+            <MatchCard key={m.id} m={m} />
+          ))}
         </div>
       </div>
       <button ref={next} type="button" data-scroll="1" className="mc-next hidden md:grid absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-card place-items-center text-slate-700 hover:text-brand-500 hover:shadow-lift transition" aria-label="Next matches">{ICON.right}</button>

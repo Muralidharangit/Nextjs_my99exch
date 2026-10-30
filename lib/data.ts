@@ -1,5 +1,7 @@
 /* MY99 EXCH — dummy data for the whole site */
+import { REGISTER_URL } from './constants';
 import type { Team, Series, MatchInput, Match, NewsItem, Game, Ads, TableRow } from './types';
+
 
 export const TEAMS: Record<string, Team> = {
   IND: { name: 'India', iso: 'in' },
@@ -166,24 +168,46 @@ export function sidesOf(m: Match): string[] {
 }
 
 export const NEWS: NewsItem[] = [
-  { id: 'india-series-win', cat: 'Test', title: 'India eye series win after dominant performance', img: '/images/news/featured.jpg', time: '2 hours ago',
-    summary: 'India are on the verge of a series win after a commanding performance in the 2nd Test against Australia.' },
-  { id: 'rohit-comeback', cat: 'Interview', title: 'Rohit Sharma hints at Test comeback in 2026', img: '/images/news/n1.jpg', time: '2 hours ago',
-    summary: 'The former captain says he is "still hungry" and has been working on his fitness with the domestic coaching staff.' },
-  { id: 'india-women-odi', cat: 'Women', title: 'India Women eye series win in final ODI', img: '/images/news/n2.jpg', time: '4 hours ago',
-    summary: 'A disciplined bowling effort set up a 27-run victory as India Women sealed the series 2-1 in Mumbai.' },
-  { id: 'australia-squad', cat: 'Squads', title: 'Australia name strong squad for 2026 tour', img: '/images/news/n3.jpg', time: '6 hours ago',
-    summary: 'Selectors have backed experience with a 16-member squad that includes two uncapped fast bowlers.' },
-  { id: 'bangladesh-prepare', cat: 'Preview', title: 'Bangladesh prepare for West Indies Test', img: '/images/news/n4.jpg', time: '8 hours ago',
-    summary: 'The hosts are expected to field three spinners on a dry Mirpur surface for the series opener.' },
-  { id: 'pakistan-t20', cat: 'T20', title: 'Pakistan eye strong start in T20 series', img: '/images/news/n5.jpg', time: '10 hours ago',
-    summary: 'A new-look top order will be tested against a pace attack that has dominated at home this season.' },
-  { id: 'england-squad', cat: 'Squads', title: 'England announce squad for West Indies tour', img: '/images/news/n6.jpg', time: '12 hours ago',
-    summary: 'Three uncapped players have been called up as England plan ahead for a busy 2027 schedule.' },
-  { id: 'nz-momentum', cat: 'World Cup', title: 'New Zealand build momentum ahead of the World Cup', img: '/images/news/n7.jpg', time: '14 hours ago',
-    summary: 'Back-to-back series wins have lifted the Black Caps up the rankings with the tournament months away.' },
-  { id: 'sa-young-talent', cat: 'Domestic', title: "South Africa's young talent shines in domestic cricket", img: '/images/news/n8.jpg', time: '16 hours ago',
-    summary: 'A 19-year-old all-rounder has lit up the domestic one-day cup with two centuries and 14 wickets.' }
+  {
+    id: 'new-zealand-target-indias-batting-line-up-in-crucial-clash',
+    cat: 'Preview',
+    title: "New Zealand Target India's Batting Line-up in Crucial Clash",
+    img: '/images/news/new.png',
+    time: '30 October 2026',
+    summary: "New Zealand prepare for another bold challenge as they look to dismantle India's powerful batting line-up and gain an advantage in the series."
+  },
+  {
+    id: 'prasidh-krishna-ruled-out-of-new-zealand-odi-series-due-to-injury',
+    cat: 'Squads',
+    title: 'Prasidh Krishna Ruled Out of New Zealand ODI Series Due to Injury',
+    img: '/images/news/prasidh-krishna.png',
+    time: '30 October 2026',
+    summary: "Prasidh Krishna misses India's ODI series against New Zealand due to a hamstring injury and is expected to join India A for the third unofficial Test."
+  },
+  {
+    id: 'lanning-and-sutherland-lead-hurricanes-to-losing-start',
+    cat: 'Women',
+    title: 'Lanning and Sutherland Lead Hurricanes to Losing Start',
+    img: '/images/news/sutherland.png',
+    time: '30 October 2026',
+    summary: 'Meg Lanning and Annabel Sutherland deliver impressive performances as the defending champions Hobart Hurricanes suffer a losing start to their campaign.'
+  },
+  {
+    id: 'the-grandmaster-behind-rapid-chess-and-calculated-chaos',
+    cat: 'Test',
+    title: 'The Grandmaster Behind Rapid Chess and Calculated Chaos',
+    img: '/images/news/n1.jpg',
+    time: '30 October 2026',
+    summary: "Explore Pat Cummins' strategic brilliance, rapid decision-making and tactical approach as he brings a grandmaster's mindset to the cricket field."
+  },
+  {
+    id: 'manvanth-kumar-karnatakas-emerging-all-rounder-in-ranji-trophy',
+    cat: 'Domestic',
+    title: "Manvanth Kumar Karnataka's Emerging All-Rounder in Ranji Trophy",
+    img: '/images/news/manvanth-kumar.png',
+    time: '30 October 2026',
+    summary: "Explore Manvanth Kumar's journey from a surprise Ranji Trophy selection to becoming Karnataka's emerging all-rounder with impressive batting and bowling performances."
+  }
 ];
 export const NEWS_BODY: string[] = [
   'The visitors arrived with plenty of questions to answer, but the opening sessions of the series have provided clear direction for both camps. Patience with the bat and discipline with the ball have been rewarded on surfaces that offered something for everyone.',
@@ -194,11 +218,11 @@ export const NEWS_BODY: string[] = [
 
 export const GAMES: Game[] = [
   { id: 'cricket-clash', title: 'Cricket Clash', cat: 'Cricket', tag: 'HOT', img: '/images/games/cricket-clash.png', thumb: '/images/games/cricket-clash.png', tagline: 'Real Cricket Action', players: '12.4K' },
-  { id: 'football-clash', title: 'Football Clash', cat: 'Football', tag: 'HOT', img: '/images/games/football-clash.png', thumb: '/images/games/football-clash.png', tagline: 'Score the Winning Goal', players: '10.8K' },
-  { id: 'basketball-clash', title: 'Basketball Clash', cat: 'Basketball', tag: 'NEW', img: '/images/games/basketball-clash.png', thumb: '/images/games/basketball-clash.png', tagline: 'Dunk. Shoot. Win.', players: '7.3K' },
+  { id: 'football-clash', title: 'Football Clash', cat: 'Football', tag: 'HOT', img: '/images/games/football-clash.png', thumb: '/images/games/2.png', tagline: 'Score the Winning Goal', players: '10.8K' },
+  { id: 'basketball-clash', title: 'Basketball Clash', cat: 'Basketball', tag: 'NEW', img: '/images/games/basketball-clash.png', thumb: '/images/games/1.png', tagline: 'Dunk. Shoot. Win.', players: '7.3K' },
   { id: 'game-clash', title: 'Game Clash', cat: 'Esports', tag: 'NEW', img: '/images/games/game-clash.png', thumb: '/images/games/game-clash.png', tagline: 'Play. Compete. Win.', players: '9.1K' },
   { id: 'india-clash', title: 'Cricket Clash: India', cat: 'Cricket', tag: 'HOT', img: '/images/games/india-clash.png', thumb: '/images/games/india-clash.png', tagline: 'Bat for Team India', players: '15.2K' },
-  { id: 'cricket-quiz', title: 'Cricket Quiz', cat: 'Quiz', tag: 'NEW', img: '/images/news/featured.jpg', thumb: '/images/news/featured.jpg', tagline: 'Test your cricket knowledge', players: '5.6K' }
+  { id: 'cricket-quiz', title: 'Cricket Quiz', cat: 'Quiz', tag: 'NEW', img: '/images/news/featured.avif', thumb: '/images/news/featured.avif', tagline: 'Test your cricket knowledge', players: '5.6K' }
 ];
 /** per game category: [description, how-to-play steps] */
 export const GAME_ABOUT: Record<string, [string, string[]]> = {
@@ -214,26 +238,26 @@ export const GAME_CATS: string[] = ['All', 'Cricket', 'Football', 'Basketball', 
 export const ADS: Ads = {
   /* 280×690 tall banners: left sidebar and right sidebar bottom */
   tall: [
-    { img: '/images/ads/tall-1.png', alt: 'MY99 EXCH – Big wins, bigger dreams. Play now', href: '/games' },
-    { img: '/images/ads/tall-2.png', alt: 'MY99 EXCH – View score. Live, fast, all sports', href: '/matches' },
-    { img: '/images/ads/tall-3.png', alt: 'MY99 EXCH – View score. Your game, your score', href: '/matches' }
+    { img: '/images/ads/tall-2.png', alt: 'MY99 EXCH – Live Cricket Scores, commentary and series', href: REGISTER_URL },
+    { img: '/images/ads/tall-3.png', alt: 'MY99 EXCH – Real-time ball-by-ball match updates', href: REGISTER_URL },
+    { img: '/images/ads/tall-1.png', alt: 'MY99 EXCH – Follow international & domestic cricket action', href: REGISTER_URL }
   ],
   tall2: [
-    { img: '/images/ads/tall-2.png', alt: 'MY99 EXCH – View score. Live, fast, all sports', href: '/matches' },
-    { img: '/images/ads/tall-3.png', alt: 'MY99 EXCH – View score. Your game, your score', href: '/matches' },
-    { img: '/images/ads/tall-1.png', alt: 'MY99 EXCH – Big wins, bigger dreams. Play now', href: '/games' }
+    { img: '/images/ads/tall-2.png', alt: 'MY99 EXCH – View live cricket scores and fixtures', href: REGISTER_URL },
+    { img: '/images/ads/tall-3.png', alt: 'MY99 EXCH – Instant cricket match updates and results', href: REGISTER_URL },
+    { img: '/images/ads/tall-1.png', alt: 'MY99 EXCH – Full scorecards and commentary coverage', href: REGISTER_URL }
   ],
   /* 220×300 box banners: right sidebar top, mobile promos, carousel promo card */
   box: [
-    { img: '/images/ads/box-1.png', alt: 'MY99 EXCH – Play cricket games. Play now', href: '/games?cat=Cricket' },
-    { img: '/images/ads/box-2.png', alt: 'MY99 EXCH – Play football games. Play now', href: '/games?cat=Football' },
-    { img: '/images/ads/box-3.png', alt: 'MY99 EXCH – Play badminton games. Play now', href: '/games' }
+    { img: '/images/games/1.png', alt: 'MY99 EXCH – Live cricket matches and fixtures', href: REGISTER_URL },
+    { img: '/images/games/2.png', alt: 'MY99 EXCH – Latest cricket news and stories', href: REGISTER_URL },
+    { img: '/images/games/3.png', alt: 'MY99 EXCH – Cricket team rankings and statistics', href: REGISTER_URL }
   ],
   /* 1200×200 wide banners: home strip slider */
   strip: [
-    { img: '/images/ads/strip-1.png', alt: 'MY99 EXCH Sportsbook – all sports', href: '/matches' },
-    { img: '/images/ads/strip-2.png', alt: 'MY99 EXCH Cricket Sportsbook', href: '/matches?cat=International' },
-    { img: '/images/ads/strip-3.png', alt: 'MY99 EXCH Badminton Sportsbook', href: '/matches' }
+    { img: '/images/ads/strip-1.png', alt: 'MY99 EXCH – Live Cricket Scores & Ball-by-Ball Updates', href: REGISTER_URL },
+    { img: '/images/ads/strip-2.png', alt: 'MY99 EXCH – International & Domestic Cricket Coverage', href: REGISTER_URL },
+    { img: '/images/ads/strip-3.png', alt: 'MY99 EXCH – Cricket News, Squads and Match Previews', href: REGISTER_URL }
   ]
 };
 

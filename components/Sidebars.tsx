@@ -1,13 +1,14 @@
 /* Left and right sidebars */
 import Link from 'next/link';
 import { ADS, GAMES } from '@/lib/data';
+import { REGISTER_URL } from '@/lib/constants';
 import { ICON } from './icons';
 import { Rotator } from './Rotator';
-import { Card, SectionHead } from './ui';
+import { Card, SectionHead, SmartLink } from './ui';
 
 const QUICK_LINKS: [string, string, keyof typeof ICON, string][] = [
-  ['Live Matches', '/matches', 'live', 'bg-red-50 text-live'], ['Upcoming', '/matches?tab=Upcoming', 'calendar', 'bg-blue-50 text-blue-600'],
-  ['Results', '/matches?tab=Recent', 'trophy', 'bg-amber-50 text-gold-600'], ['Games', '/games', 'game', 'bg-brand-50 text-brand-600']
+  ['Live Matches', REGISTER_URL, 'live', 'bg-red-50 text-live'], ['Upcoming', REGISTER_URL, 'calendar', 'bg-blue-50 text-blue-600'],
+  ['Results', REGISTER_URL, 'trophy', 'bg-amber-50 text-gold-600'], ['Games', REGISTER_URL, 'game', 'bg-brand-50 text-brand-600']
 ];
 
 export function LeftSidebar() {
@@ -16,7 +17,7 @@ export function LeftSidebar() {
       <Rotator slides={ADS.tall} aspect="aspect-[28/69]" />
       <Card className="mt-3">
         <h2 className="font-display font-bold text-lg px-4 pt-3 pb-1">Quick Links</h2>
-        <ul className="pb-2">{QUICK_LINKS.map(([l, h, ic, c]) => <li key={h}><Link href={h} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition border-t border-slate-100 first:border-0"><span className={`w-8 h-8 rounded-full grid place-items-center ${c}`}>{ICON[ic]}</span>{l}</Link></li>)}</ul>
+        <ul className="pb-2">{QUICK_LINKS.map(([l, h, ic, c], idx) => <li key={`${l}-${idx}`}><SmartLink href={h} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition border-t border-slate-100 first:border-0"><span className={`w-8 h-8 rounded-full grid place-items-center ${c}`}>{ICON[ic]}</span>{l}</SmartLink></li>)}</ul>
       </Card>
     </div>
   );

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MATCHES, teamShort } from '@/lib/data';
 import { NAV, pageOf } from '@/lib/nav';
-import { REGISTER_URL } from '@/lib/constants';
 import { ICON } from './icons';
 import { Flag, PlayBtn, SmartLink, statusColor } from './ui';
 
@@ -43,18 +42,27 @@ export default function SiteHeader() {
             <nav className="hidden xl:flex items-center text-sm font-semibold ml-2 whitespace-nowrap" aria-label="Main" onClick={blurDropdown}>
               {NAV.map(n => n.items
                 ? <div key={n.label} className="relative group">
-                    <button type="button" className={`flex items-center gap-1 px-2 2xl:px-3 py-2 text-white/90 hover:text-gold-400 transition ${n.page === page ? 'text-gold-400' : ''}`} aria-haspopup="true">{n.label}{ICON.chevron}</button>
+                    {n.href ? (
+                      <SmartLink href={n.href} className={`flex items-center gap-1 px-2 2xl:px-3 py-2 text-white/90 hover:text-gold-400 transition ${n.page === page ? 'text-gold-400' : ''}`} aria-haspopup="true">
+                        {n.label}{ICON.chevron}
+                      </SmartLink>
+                    ) : (
+                      <button type="button" className={`flex items-center gap-1 px-2 2xl:px-3 py-2 text-white/90 hover:text-gold-400 transition ${n.page === page ? 'text-gold-400' : ''}`} aria-haspopup="true">
+                        {n.label}{ICON.chevron}
+                      </button>
+                    )}
                     <div className="absolute left-0 top-full pt-2 hidden group-hover:block group-focus-within:block z-50">
                       <ul className="bg-white rounded-lg shadow-lift py-2 min-w-[220px] border border-slate-100">
-                        {n.items.map(([l, h]) => <li key={h}><SmartLink href={h} className="block px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600">{l}</SmartLink></li>)}
+                        {n.items.map(([l, h], idx) => <li key={`${l}-${idx}`}><SmartLink href={h} className="block px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600">{l}</SmartLink></li>)}
                       </ul>
                     </div>
                   </div>
-                : <Link key={n.label} href={n.href!} className={`px-2 2xl:px-3 py-2 text-white/90 hover:text-gold-400 transition ${n.page === page ? 'text-gold-400' : ''}`}>{n.label}</Link>)}
+                : <SmartLink key={n.label} href={n.href!} className={`px-2 2xl:px-3 py-2 text-white/90 hover:text-gold-400 transition ${n.page === page ? 'text-gold-400' : ''}`}>{n.label}</SmartLink>)}
             </nav>
             <div className="ml-auto flex items-center gap-2 xl:gap-3">
-              <PlayBtn label="Play Now" href="/games" extra="hidden sm:inline-flex text-sm" />
-              <a href={REGISTER_URL} className="w-10 h-10 rounded-full bg-navy-900/80 text-white grid place-items-center ring-2 ring-white/20 hover:ring-gold-500 transition" aria-label="Login" title="Login">{ICON.user}</a>
+              <SmartLink href="https://my99exch.ai/players/register" className="hidden sm:inline-flex items-center gap-1.5 rounded-full px-5 py-2 font-bold text-navy-900 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-600 shadow-glow hover:scale-105 transition duration-300 text-sm">
+                Live Scores
+              </SmartLink>
             </div>
           </div>
         </div>
@@ -70,7 +78,7 @@ export default function SiteHeader() {
                 </Link>
               ))}
             </div>
-            <div className="relative flex items-center pl-2">
+            {/* <div className="relative flex items-center pl-2">
               <button ref={allBtn} type="button" id="all-btn" className="h-9 px-3 rounded-md bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1 transition" aria-expanded={allOpen} aria-controls="all-panel" onClick={() => setAllOpen(o => !o)}>ALL {ICON.chevron}</button>
               <div ref={allPanel} id="all-panel" hidden={!allOpen} onClick={closeOnLink(() => setAllOpen(false))} className="absolute right-0 top-full mt-1 w-80 max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-lift border border-slate-100 z-50 text-slate-700">
                 {(['live', 'upcoming', 'recent'] as const).map(st => [
@@ -83,7 +91,7 @@ export default function SiteHeader() {
                   ))
                 ])}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -93,10 +101,15 @@ export default function SiteHeader() {
           <div className="flex items-center justify-between h-16 px-4 bg-brand-500"><img src="/images/logo.webp" alt="MY99 EXCH" className="h-8" /><button type="button" className="w-11 h-11 grid place-items-center text-white" aria-label="Close menu" onClick={() => setDrawer(false)}>{ICON.close}</button></div>
           <div className="p-2">
             {NAV.map(n => n.items
-              ? <details key={n.label} className="group"><summary className="flex items-center justify-between px-3 min-h-[44px] font-semibold text-slate-700 cursor-pointer list-none">{n.label}<span className="transition group-open:rotate-180">{ICON.chevron}</span></summary>
-                  {n.items.map(([l, h]) => <SmartLink key={h} href={h} className="block pl-6 pr-3 py-2.5 text-sm text-slate-600 hover:text-brand-500">{l}</SmartLink>)}</details>
-              : <Link key={n.label} href={n.href!} className="flex items-center px-3 min-h-[44px] font-semibold text-slate-700 hover:text-brand-500">{n.label}</Link>)}
-            <div className="p-3"><PlayBtn label="Play Now" href="/games" extra="w-full" /></div>
+              ? <details key={n.label} className="group">
+                  <summary className="flex items-center justify-between px-3 min-h-[44px] font-semibold text-slate-700 cursor-pointer list-none">
+                    {n.href ? <SmartLink href={n.href} className="hover:text-brand-500">{n.label}</SmartLink> : <span>{n.label}</span>}
+                    <span className="transition group-open:rotate-180">{ICON.chevron}</span>
+                  </summary>
+                  {n.items.map(([l, h], idx) => <SmartLink key={`${l}-${idx}`} href={h} className="block pl-6 pr-3 py-2.5 text-sm text-slate-600 hover:text-brand-500">{l}</SmartLink>)}
+                </details>
+              : <SmartLink key={n.label} href={n.href!} className="flex items-center px-3 min-h-[44px] font-semibold text-slate-700 hover:text-brand-500">{n.label}</SmartLink>)}
+            <div className="p-3"><PlayBtn label="Play Now" href="https://my99exch.ai/players/register" extra="w-full" /></div>
           </div>
         </nav>
       </div>

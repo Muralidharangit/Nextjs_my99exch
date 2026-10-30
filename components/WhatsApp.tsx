@@ -22,7 +22,7 @@ export default function WhatsApp() {
     <div className="fixed right-4 bottom-20 md:bottom-6 md:right-6 z-[60] flex items-end gap-3">
       <div id="wa-bubble" hidden={!show} className="wa-pop relative max-w-[220px] rounded-2xl rounded-br-sm bg-white shadow-lift border border-slate-100 pl-4 pr-8 py-3 mb-2">
         <button type="button" id="wa-close" className="absolute top-1 right-1 w-7 h-7 grid place-items-center text-slate-400 hover:text-slate-700" aria-label="Close chat message" onClick={close}>&times;</button>
-        <p className="text-sm font-semibold text-slate-800">Need help?</p>
+        <p className="text-sm font-semibold text-slate-800">Need Cricket Updates?</p>
         <a href={href} target="_blank" rel="noopener" className="text-xs text-[#128C7E] font-semibold hover:underline">Chat with us on WhatsApp →</a>
       </div>
       <a href={href} target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp" className="relative shrink-0 w-14 h-14 rounded-full bg-[#25D366] text-white grid place-items-center shadow-lift hover:scale-110 transition">
